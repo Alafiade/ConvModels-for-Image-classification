@@ -7,8 +7,17 @@
         "colab_type": "text"
       },
       "source": [
-        "<a href=\"https://colab.research.google.com/github/Alafiade/ConvModels-for-Image-classification/blob/main/MODEL%20TRAINIG%20AND%20PERFORMANCE%20ANALYSIS%20\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+        "<a href=\"https://colab.research.google.com/github/Alafiade/ConvModels-for-Image-classification/blob/main/MODEL%20TRAINING%20AND%20PERFORMANCE%20ANALYSIS\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
       ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "IMPORTING DEPENDENCIES"
+      ],
+      "metadata": {
+        "id": "HdHElYaXTY__"
+      }
     },
     {
       "cell_type": "code",
@@ -35,14 +44,23 @@
       ]
     },
     {
+      "cell_type": "markdown",
+      "source": [
+        "DATA ACQUISITION"
+      ],
+      "metadata": {
+        "id": "XctZRW6LTdvb"
+      }
+    },
+    {
       "cell_type": "code",
-      "execution_count": 2,
+      "execution_count": 15,
       "metadata": {
         "colab": {
           "base_uri": "https://localhost:8080/"
         },
         "id": "7wkYtnWznIIO",
-        "outputId": "f5249cc9-36b2-464c-a08f-b656c98e5e00"
+        "outputId": "9572ece6-d201-4567-d885-b7f630771253"
       },
       "outputs": [
         {
@@ -52,12 +70,13 @@
             "Dataset URL: https://www.kaggle.com/datasets/aryashah2k/breast-ultrasound-images-dataset\n",
             "License(s): CC0-1.0\n",
             "Downloading breast-ultrasound-images-dataset.zip to /content\n",
-            " 99% 193M/195M [00:09<00:00, 25.0MB/s]\n",
-            "100% 195M/195M [00:09<00:00, 21.3MB/s]\n"
+            " 98% 192M/195M [00:09<00:00, 24.3MB/s]\n",
+            "100% 195M/195M [00:09<00:00, 21.5MB/s]\n"
           ]
         }
       ],
       "source": [
+        "#Downloading dataset from Kaggle\n",
         "!kaggle datasets download -d aryashah2k/breast-ultrasound-images-dataset"
       ]
     },
@@ -1659,8 +1678,18 @@
         }
       ],
       "source": [
+        "#Unzipping dataset\n",
         "!unzip breast.zip"
       ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "DATA PREPROCESSING"
+      ],
+      "metadata": {
+        "id": "Kyl0GwgDTtz1"
+      }
     },
     {
       "cell_type": "code",
@@ -1716,7 +1745,7 @@
         "data_dir = \"/content/Dataset_BUSI_with_GT\"  # Replace with the actual path to your data directory\n",
         "output_dir = \"/content/sample_data\" # Define output directory for split data\n",
         "\n",
-        "# Split the data into train and val sets using splitfolders\n",
+        "# Spliting the data into train and val sets using splitfolders\n",
         "# This will create 'train' and 'val' directories inside output_dir\n",
         "splitfolders.ratio(data_dir, output=output_dir, seed=42, ratio=(0.8, 0.2), group_prefix=None)\n",
         "\n",
@@ -1743,6 +1772,15 @@
         "# Set device\n",
         "device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')"
       ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "IMPORTING PRETRAINED RESNET 101 MODEL"
+      ],
+      "metadata": {
+        "id": "obhNsoUpT1ak"
+      }
     },
     {
       "cell_type": "code",
@@ -2110,6 +2148,15 @@
       ]
     },
     {
+      "cell_type": "markdown",
+      "source": [
+        "IMORTING AND DEFINING SGD OPTIMIZER"
+      ],
+      "metadata": {
+        "id": "1LitljT2T63S"
+      }
+    },
+    {
       "cell_type": "code",
       "source": [
         "import torch.optim as optim\n",
@@ -2124,7 +2171,7 @@
     {
       "cell_type": "markdown",
       "source": [
-        "Learning Rate Scheduler"
+        "LEARNING RATE SCHEDULER"
       ],
       "metadata": {
         "id": "LZRotuBxvya0"
@@ -2157,7 +2204,7 @@
     {
       "cell_type": "markdown",
       "source": [
-        "Replacing all Classification Head"
+        "REPLACING THE CLASSIFICATION HEAD"
       ],
       "metadata": {
         "id": "4V5_pGi-qZU0"
@@ -2166,6 +2213,9 @@
     {
       "cell_type": "code",
       "source": [
+        "#This code replaces the classification head of the pretrained resnet101 model\n",
+        "# With a the specific number of  classes in the dataset\n",
+        "\n",
         "import torch.nn as nn\n",
         "for param in model.parameters():\n",
         "  param.requires_grad = True\n",
@@ -2179,8 +2229,19 @@
       "outputs": []
     },
     {
+      "cell_type": "markdown",
+      "source": [
+        "DROPOUT LAYER IMPLEMENTATION"
+      ],
+      "metadata": {
+        "id": "IVzfXv8-UPol"
+      }
+    },
+    {
       "cell_type": "code",
       "source": [
+        "# This line of code applies dropout regularization during training to prevent overfitting.\n",
+        "\n",
         "torch.nn.Dropout(p=0.5)"
       ],
       "metadata": {
@@ -2188,9 +2249,9 @@
           "base_uri": "https://localhost:8080/"
         },
         "id": "cuq5add2uOZu",
-        "outputId": "fe22af9f-3037-4684-e667-b0c7740202cb"
+        "outputId": "d332f7d0-b3e8-4abb-9705-c7827e7d2a13"
       },
-      "execution_count": 10,
+      "execution_count": 14,
       "outputs": [
         {
           "output_type": "execute_result",
@@ -2200,9 +2261,18 @@
             ]
           },
           "metadata": {},
-          "execution_count": 10
+          "execution_count": 14
         }
       ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "TRAINING LOOP FOR THE MODEL"
+      ],
+      "metadata": {
+        "id": "7r87IqlSV9jf"
+      }
     },
     {
       "cell_type": "code",
@@ -2368,9 +2438,18 @@
       ]
     },
     {
+      "cell_type": "markdown",
+      "source": [
+        "VISUALIZING TRAINING LOGS"
+      ],
+      "metadata": {
+        "id": "uIZdtBKtWXr8"
+      }
+    },
+    {
       "cell_type": "code",
       "source": [
-        "\n",
+        "# Arranging my training logs into lists for visualization\n",
         "train_loss = [4.8185, 1.3570, 0.9644, 0.8864, 0.8418, 0.7775, 0.7500, 0.7289, 0.7025, 0.7053,\n",
         "              0.6957, 0.6753, 0.6577, 0.6835, 0.6349, 0.6549, 0.6382, 0.6338, 0.6112, 0.6108]\n",
         "val_loss = [1.8182, 1.8675, 0.9474, 0.8744, 0.7317, 0.7859, 0.7339, 0.7436, 0.7260, 0.7205,\n",
@@ -2443,7 +2522,7 @@
     "colab": {
       "gpuType": "T4",
       "provenance": [],
-      "authorship_tag": "ABX9TyOaKtat8H48Qj9v92QHQz7s",
+      "authorship_tag": "ABX9TyNUOCz9eqkYmhHfNAtrIN20",
       "include_colab_link": true
     },
     "kernelspec": {
